@@ -74,7 +74,7 @@ architecture rtl of hdmi_top is
             OBJECT_SIZE  : natural := 16
         );
         port(
-            clk, rst      : in  std_logic;
+            clk           : in  std_logic;
             hsync, vsync  : out std_logic;
             video_active  : out std_logic;
             pixel_x       : out std_logic_vector(OBJECT_SIZE-1 downto 0);
@@ -146,7 +146,7 @@ begin
     -- video timing
     timing: timing_generator
         generic map ( RESOLUTION => RESOLUTION, GEN_PIX_LOC => GEN_PIX_LOC, OBJECT_SIZE => OBJECT_SIZE )
-        port map( clk=>pixclk, rst=>rst, hsync=>hsync, vsync=>vsync, video_active=>video_active, pixel_x=>pixel_x, pixel_y=>pixel_y );
+        port map( clk=>pixclk, hsync=>hsync, vsync=>vsync, video_active=>video_active, pixel_x=>pixel_x, pixel_y=>pixel_y );
 
     -- tmds signaling
     tmds_signaling: rgb2tmds  port map(

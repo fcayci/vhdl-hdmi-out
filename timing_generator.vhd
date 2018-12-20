@@ -13,7 +13,7 @@ entity timing_generator is
         OBJECT_SIZE  : natural := 16
     );
     port(
-        clk, rst      : in  std_logic;
+        clk           : in  std_logic;
         hsync, vsync  : out std_logic;
         video_active  : out std_logic;
         pixel_x       : out std_logic_vector(OBJECT_SIZE-1 downto 0);
@@ -123,31 +123,24 @@ begin
                VGA_TIMING    when RESOLUTION = "VGA";
 
     -- pixel counters
-    process (clk, rst) is
+    process (clk) is
     begin
         if rising_edge(clk) then
-            if rst = '1' then
-                vcount <= (others => '0');
+            if (hcount = timings.H_TOTAL) then
                 hcount <= (others => '0');
-            else
-                if (hcount = timings.H_TOTAL) then
-                    hcount <= (others => '0');
-                    if (vcount = timings.V_TOTAL) then
-                        vcount <= (others => '0');
-                    else
-                        vcount <= vcount + 1;
-                    end if;
+                if (vcount = timings.V_TOTAL) then
+                    vcount <= (others => '0');
                 else
-                    hcount <= hcount + 1;
+                    vcount <= vcount + 1;
                 end if;
+            else
+                hcount <= hcount + 1;
             end if;
         end if;
     end process;
 
     -- generate video_active, hsync, and vsync signals based on the counters
-    video_active <= not timings.ACTIVE when rst = '1' else
-                    timings.ACTIVE when (hcount < timings.H_VIDEO) and (vcount < timings.V_VIDEO ) else
-                    not timings.ACTIVE;
+    video_active <= timings.ACTIVE when (hcount < timings.H_VIDEO) and (vcount < timings.V_VIDEO ) else not timings.ACTIVE;
     hsync <= timings.H_POL when (hcount >= timings.H_VIDEO + timings.H_FP) and (hcount < timings.H_TOTAL - timings.H_BP) else not timings.H_POL;
     vsync <= timings.V_POL when (vcount >= timings.V_VIDEO + timings.V_FP) and (vcount < timings.V_TOTAL - timings.V_BP) else not timings.V_POL;
 
