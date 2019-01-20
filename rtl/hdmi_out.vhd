@@ -11,7 +11,7 @@ use ieee.numeric_std.all;
 library unisim;
 use unisim.vcomponents.all;
 
-entity hdmi_top is
+entity hdmi_out is
     generic (
         RESOLUTION   : string  := "HD720P"; -- HD720P, SVGA, VGA
         GEN_PATTERN  : boolean := false; -- generate pattern or objects
@@ -27,9 +27,9 @@ entity hdmi_top is
         data_p : out std_logic_vector(2 downto 0);
         data_n : out std_logic_vector(2 downto 0)
     );
-end hdmi_top;
+end hdmi_out;
 
-architecture rtl of hdmi_top is
+architecture rtl of hdmi_out is
 
     component clock_gen is
     generic (

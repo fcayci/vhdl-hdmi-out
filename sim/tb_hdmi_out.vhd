@@ -5,15 +5,15 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
-entity hdmi_top_tb is
-end hdmi_top_tb;
+entity tb_hdmi_out is
+end tb_hdmi_out;
 
-architecture rtl of hdmi_top_tb is
+architecture rtl of tb_hdmi_out is
 
-    component hdmi_top is
+    component hdmi_out is
         generic (
             RESOLUTION   : string  := "HD720P"; -- HD720P, SVGA, VGA
-            GEN_PATTERN  : boolean := true; -- generate pattern or objects 
+            GEN_PATTERN  : boolean := true; -- generate pattern or objects
             GEN_PIX_LOC  : boolean := true;
             PIX_LOC_SIZE : natural := 16
         );
@@ -39,7 +39,7 @@ architecture rtl of hdmi_top_tb is
 begin
 
     -- clock generate
-    uut0: hdmi_top port map(clk=>clk, rst=>rst, tmds_clk_p=>tmds_clk_p, tmds_clk_n=>tmds_clk_n,
+    uut0: hdmi_out port map(clk=>clk, rst=>rst, tmds_clk_p=>tmds_clk_p, tmds_clk_n=>tmds_clk_n,
                             tmds_data_p=>tmds_data_p, tmds_data_n=>tmds_data_n);
 
     process
