@@ -7,6 +7,9 @@ library unisim;
 use unisim.vcomponents.all;
 
 entity serializer is
+    generic (
+        GHDL_SIM : boolean := true
+    );
     port (
         rst      : in  std_logic;
         pixclk   : in  std_logic;  -- low speed pixel clock 1x
@@ -26,6 +29,9 @@ begin
     obuf : OBUFDS
     generic map (IOSTANDARD =>"TMDS_33")
     port map (I=>sdata, O=>s_p, OB=>s_n);
+
+forimpl: if GHDL_SIM = false generate
+begin
 
     -- serializer 10:1 (5:1 DDR)
     -- master-slave cascaded since data width > 8
@@ -102,5 +108,91 @@ begin
         T3                => '0',
         T4                => '0'
     );
+
+end generate;
+
+-- WARNING: this is for GHDL simulator only. Not for implementation!
+--   OSERDESE2 is an encrypted IP, so convert that to
+--   OSERDESE1 (6-series serdes)
+forghdl: if GHDL_SIM = true generate
+begin
+
+    -- serializer 10:1 (5:1 DDR)
+    -- master-slave cascaded since data width > 8
+    master : OSERDESE1
+    generic map (
+        DATA_RATE_OQ      => "DDR",
+        DATA_RATE_TQ      => "SDR",
+        DATA_WIDTH        => 10,
+        SERDES_MODE       => "MASTER",
+        TRISTATE_WIDTH    => 1)
+    port map (
+        OQ                => sdata,
+        OFB               => open,
+        TQ                => open,
+        TFB               => open,
+        SHIFTOUT1         => open,
+        SHIFTOUT2         => open,
+        CLKPERF           => '0',
+        CLKPERFDELAY      => '0',
+        ODV               => '0',
+        WC                => '0',
+        CLK               => serclk,
+        CLKDIV            => pixclk,
+        D1                => endata_i(0),
+        D2                => endata_i(1),
+        D3                => endata_i(2),
+        D4                => endata_i(3),
+        D5                => endata_i(4),
+        D6                => endata_i(5),
+        TCE               => '0',
+        OCE               => '1',
+        RST               => rst,
+        SHIFTIN1          => cascade1,
+        SHIFTIN2          => cascade2,
+        T1                => '0',
+        T2                => '0',
+        T3                => '0',
+        T4                => '0'
+    );
+
+    slave : OSERDESE1
+    generic map (
+        DATA_RATE_OQ      => "DDR",
+        DATA_RATE_TQ      => "SDR",
+        DATA_WIDTH        => 10,
+        SERDES_MODE       => "SLAVE",
+        TRISTATE_WIDTH    => 1)
+    port map (
+        OQ                => open,
+        OFB               => open,
+        TQ                => open,
+        TFB               => open,
+        CLKPERF           => '0',
+        CLKPERFDELAY      => '0',
+        ODV               => '0',
+        WC                => '0',
+        SHIFTOUT1         => cascade1,
+        SHIFTOUT2         => cascade2,
+        CLK               => serclk,
+        CLKDIV            => pixclk,
+        D1                => '0',
+        D2                => '0',
+        D3                => endata_i(6),
+        D4                => endata_i(7),
+        D5                => endata_i(8),
+        D6                => endata_i(9),
+        TCE               => '0',
+        OCE               => '1',
+        RST               => rst,
+        SHIFTIN1          => '0',
+        SHIFTIN2          => '0',
+        T1                => '0',
+        T2                => '0',
+        T3                => '0',
+        T4                => '0'
+    );
+
+end generate;
 
 end rtl;

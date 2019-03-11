@@ -16,8 +16,9 @@ entity hdmi_out is
         RESOLUTION   : string  := "HD720P"; -- HD720P, SVGA, VGA
         GEN_PATTERN  : boolean := false; -- generate pattern or objects
         GEN_PIX_LOC  : boolean := true; -- generate location counters for x / y coordinates
-        OBJECT_SIZE  : natural := 16;   -- size of the objects. should be higher than 11
-        PIXEL_SIZE   : natural := 24    -- RGB pixel total size. (R + G + B)
+        OBJECT_SIZE  : natural := 16; -- size of the objects. should be higher than 11
+        PIXEL_SIZE   : natural := 24; -- RGB pixel total size. (R + G + B)
+        GHDL_SIM     : boolean := false -- disables OSERDESE2 and enables OSERDESE1 for GHDL simulation
     );
     port(
         clk, rst : in std_logic;
@@ -47,6 +48,9 @@ architecture rtl of hdmi_out is
     end component;
 
     component rgb2tmds is
+    generic(
+        GHDL_SIM : boolean := false
+    );
     port(
         -- reset and clocks
         rst : in std_logic;
@@ -149,7 +153,9 @@ begin
         port map( clk=>pixclk, hsync=>hsync, vsync=>vsync, video_active=>video_active, pixel_x=>pixel_x, pixel_y=>pixel_y );
 
     -- tmds signaling
-    tmds_signaling: rgb2tmds  port map(
+    tmds_signaling: rgb2tmds
+        generic map (GHDL_SIM=>GHDL_SIM)
+        port map(
         rst=>rst, pixelclock=>pixclk, serialclock=>serclk,
         video_data=>video_data, video_active=>video_active, hsync=>hsync, vsync=>vsync,
         clk_p=>clk_p, clk_n=>clk_n, data_p=>data_p, data_n=>data_n

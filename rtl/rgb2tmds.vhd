@@ -6,6 +6,9 @@ library ieee;
 use ieee.std_logic_1164.all;
 
 entity rgb2tmds is
+    generic (
+        GHDL_SIM : boolean := true
+    );
     port(
         -- reset and clocks
         rst : in std_logic;
@@ -39,6 +42,9 @@ architecture rtl of rgb2tmds is
     end component;
 
     component serializer is
+    generic(
+        GHDL_SIM : boolean := false
+    );
     port (
         pixclk   : in  std_logic;
         serclk   : in  std_logic;
@@ -62,10 +68,18 @@ begin
     tg : tmds_encoder port map (clk=>pixelclock, en=>video_active, ctrl=>"00", din=>video_data(15 downto 8), dout=>engreen);
 
     -- tmds output serializers
-    ser_b: serializer port map (pixclk=>pixelclock, serclk=>serialclock, rst=>rst, endata_i=>enblue,  s_p=>data_p(0), s_n=>data_n(0));
-    ser_g: serializer port map (pixclk=>pixelclock, serclk=>serialclock, rst=>rst, endata_i=>engreen, s_p=>data_p(1), s_n=>data_n(1));
-    ser_r: serializer port map (pixclk=>pixelclock, serclk=>serialclock, rst=>rst, endata_i=>enred,   s_p=>data_p(2), s_n=>data_n(2));
+    ser_b: serializer
+        generic map (GHDL_SIM=>GHDL_SIM)
+        port map (pixclk=>pixelclock, serclk=>serialclock, rst=>rst, endata_i=>enblue,  s_p=>data_p(0), s_n=>data_n(0));
+    ser_g: serializer
+        generic map (GHDL_SIM=>GHDL_SIM)
+        port map (pixclk=>pixelclock, serclk=>serialclock, rst=>rst, endata_i=>engreen, s_p=>data_p(1), s_n=>data_n(1));
+    ser_r: serializer
+        generic map (GHDL_SIM=>GHDL_SIM)
+        port map (pixclk=>pixelclock, serclk=>serialclock, rst=>rst, endata_i=>enred,   s_p=>data_p(2), s_n=>data_n(2));
     -- tmds clock serializer to phase align with data signals
-    ser_c: serializer port map (pixclk=>pixelclock, serclk=>serialclock, rst=>rst, endata_i=>"1111100000", s_p=>clk_p, s_n=>clk_n);
+    ser_c: serializer
+        generic map (GHDL_SIM=>GHDL_SIM)
+        port map (pixclk=>pixelclock, serclk=>serialclock, rst=>rst, endata_i=>"1111100000", s_p=>clk_p, s_n=>clk_n);
 
 end rtl;
