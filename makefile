@@ -2,15 +2,26 @@
 # description:
 #   add ghdl to your PATH for simulation
 #   add gtkwave to your PATH for displayin the waveform
-#   change the ARCHNAME for simulating different parts
 
 CC = ghdl
 SIM = gtkwave
 ARCHNAME = tb_hdmi_out
 STOPTIME = 100ms
 
-SRCS = $(wildcard rtl/*.vhd)
+VHDLSTD = --std=02
+
+#SRCS = $(wildcard rtl/*.vhd)
 #SRCS += $(wildcard impl/*.vhd)
+
+SRCS += rtl/clock_gen.vhd
+SRCS += rtl/serializer.vhd
+SRCS += rtl/tmds_encoder.vhd
+SRCS += rtl/timing_generator.vhd
+SRCS += rtl/rgb2tmds.vhd
+SRCS += rtl/pattern_generator.vhd
+SRCS += rtl/objectbuffer.vhd
+SRCS += rtl/hdmi_out.vhd
+
 TBS = $(wildcard sim/tb_*.vhd)
 TB = sim/$(ARCHNAME).vhd
 WORKDIR = debug
@@ -42,14 +53,17 @@ all: clean analyze
 analyze:
 	@echo "analyzing designs..."
 	@mkdir -p $(WORKDIR)
-	$(CC) -a --work=unisim --workdir=$(WORKDIR) -fexplicit --ieee=synopsys $(UNISRCS)
-	$(CC) -a --workdir=$(WORKDIR) -P$(WORKDIR) $(SRCS) $(TBS)
+	$(CC) -a --work=unisim --workdir=$(WORKDIR) -fexplicit  $(VHDLSTD) \
+	  --ieee=synopsys $(UNISRCS)
+	$(CC) -a --workdir=$(WORKDIR) -P$(WORKDIR)  $(VHDLSTD) $(SRCS) $(TBS)
 
 .PHONY: simulate
 simulate: clean analyze
 	@echo "simulating design:" $(TB)
-	$(CC) --elab-run --workdir=$(WORKDIR) -P$(WORKDIR) -fexplicit --ieee=synopsys -o $(WORKDIR)/$(ARCHNAME).bin $(ARCHNAME) --wave=$(WORKDIR)/$(ARCHNAME).ghw --stop-time=$(STOPTIME)
-	$(SIM) $(WORKDIR)/$(ARCHNAME).ghw
+	$(CC) --elab-run --workdir=$(WORKDIR) -P$(WORKDIR) $(VHDLSTD) -fexplicit \
+	  --ieee=synopsys -o $(WORKDIR)/$(ARCHNAME).bin $(ARCHNAME) \
+	  --vcd=$(WORKDIR)/$(ARCHNAME).vcd --stop-time=$(STOPTIME)
+	$(SIM) $(WORKDIR)/$(ARCHNAME).vcd
 
 .PHONY: clean
 clean:

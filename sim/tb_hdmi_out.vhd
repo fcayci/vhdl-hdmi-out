@@ -16,7 +16,7 @@ architecture rtl of tb_hdmi_out is
 	--   but since it is encrypted, GHDL cannot simulate it
 	--   Thus, this will downgrade it to OSERDESE1
 	--   for simulation under GHDL
-	constant GHDL_SIM : boolean := true;
+	constant GHDL_SIM : boolean := false;
 
 	signal clk : std_logic := '0';
 	signal rst : std_logic := '0';
@@ -38,20 +38,17 @@ architecture rtl of tb_hdmi_out is
 begin
 
 	-- clock generate
-	uut0: entity work.hdmi_out(rtl)
-	  generic map(RESOLUTION=>RESOLUTION, GEN_PATTERN=>GEN_PATTERN,
-				  GEN_PIX_LOC=>GEN_PIX_LOC, OBJECT_SIZE=>OBJECT_SIZE,
-				  PIXEL_SIZE=>PIXEL_SIZE, GHDL_SIM=>GHDL_SIM)
+	uut0: entity work.hdmi_out
 	  port map(clk=>clk, rst=>rst, clk_p=>clk_p, clk_n=>clk_n,
 	           data_p=>data_p, data_n=>data_n);
 
 	process
 	begin
-		for i in 0 to 2 * frame_time / clk_period loop
+		--for i in 0 to 2 * frame_time / clk_period loop
 			wait for clk_period/2;
 			clk <= not clk;
-		end loop;
-		wait;
+		--end loop;
+		--wait;
 	end process;
 
 	process
