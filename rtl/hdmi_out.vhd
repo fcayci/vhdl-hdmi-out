@@ -18,7 +18,7 @@ entity hdmi_out is
 		GEN_PIX_LOC  : boolean := true; -- generate location counters for x / y coordinates
 		OBJECT_SIZE  : natural := 16; -- size of the objects. should be higher than 11
 		PIXEL_SIZE   : natural := 24; -- RGB pixel total size. (R + G + B)
-		GHDL_SIM     : boolean := false -- disables OSERDESE2 and enables OSERDESE1 for GHDL simulation
+		SERIES6      : boolean := false -- disables OSERDESE2 and enables OSERDESE1 for GHDL simulation (7 series vs 6 series)
 	);
 	port(
 		clk, rst : in std_logic;
@@ -75,7 +75,7 @@ begin
 
 	-- tmds signaling
 	tmds_signaling: entity work.rgb2tmds(rtl)
-	  generic map (GHDL_SIM=>GHDL_SIM)
+	  generic map (SERIES6=>SERIES6)
 	  port map (rst=>rst, pixelclock=>pixclk, serialclock=>serclk,
 		video_data=>video_data, video_active=>video_active, hsync=>hsync, vsync=>vsync,
 		clk_p=>clk_p, clk_n=>clk_n, data_p=>data_p, data_n=>data_n);

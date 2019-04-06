@@ -7,7 +7,7 @@ use ieee.std_logic_1164.all;
 
 entity rgb2tmds is
 	generic (
-		GHDL_SIM : boolean := true
+		SERIES6 : boolean := false
 	);
 	port(
 		-- reset and clocks
@@ -47,17 +47,17 @@ begin
 
 	-- tmds output serializers
 	ser_b: entity work.serializer(rtl)
-	  generic map (GHDL_SIM=>GHDL_SIM)
+	  generic map (SERIES6=>SERIES6)
 	  port map (pixclk=>pixelclock, serclk=>serialclock, rst=>rst, endata_i=>enblue,  s_p=>data_p(0), s_n=>data_n(0));
 	ser_g: entity work.serializer(rtl)
-	  generic map (GHDL_SIM=>GHDL_SIM)
+	  generic map (SERIES6=>SERIES6)
 	  port map (pixclk=>pixelclock, serclk=>serialclock, rst=>rst, endata_i=>engreen, s_p=>data_p(1), s_n=>data_n(1));
 	ser_r: entity work.serializer(rtl)
-	 generic map (GHDL_SIM=>GHDL_SIM)
+	 generic map (SERIES6=>SERIES6)
 	 port map (pixclk=>pixelclock, serclk=>serialclock, rst=>rst, endata_i=>enred,   s_p=>data_p(2), s_n=>data_n(2));
 	-- tmds clock serializer to phase align with data signals
 	ser_c: entity work.serializer(rtl)
-	  generic map (GHDL_SIM=>GHDL_SIM)
+	  generic map (SERIES6=>SERIES6)
 	  port map (pixclk=>pixelclock, serclk=>serialclock, rst=>rst, endata_i=>"1111100000", s_p=>clk_p, s_n=>clk_n);
 
 end rtl;

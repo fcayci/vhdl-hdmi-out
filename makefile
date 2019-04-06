@@ -6,13 +6,16 @@
 CC = ghdl
 SIM = gtkwave
 ARCHNAME = tb_hdmi_out
-STOPTIME = 100ms
+STOPTIME = 4us
 
+# update Xilinx Vivado installation path
+XILINX_VIVADO ?= /opt/Xilinx/Vivado/2018.3
+UNISIM_PATH = $(XILINX_VIVADO)/data/vhdl/src/unisims
+
+# use VHDL 2002 standard
 VHDLSTD = --std=02
 
-#SRCS = $(wildcard rtl/*.vhd)
-#SRCS += $(wildcard impl/*.vhd)
-
+# order is important
 SRCS += rtl/clock_gen.vhd
 SRCS += rtl/serializer.vhd
 SRCS += rtl/tmds_encoder.vhd
@@ -25,9 +28,6 @@ SRCS += rtl/hdmi_out.vhd
 TBS = $(wildcard sim/tb_*.vhd)
 TB = sim/$(ARCHNAME).vhd
 WORKDIR = debug
-
-XILINX_VIVADO = /opt/apps/Xilinx/Vivado/2018.3
-UNISIM_PATH = $(XILINX_VIVADO)/data/vhdl/src/unisims
 
 # all the used primitives are added individually
 #UNISRCS += $(UNISIM_PATH)/*.vhd

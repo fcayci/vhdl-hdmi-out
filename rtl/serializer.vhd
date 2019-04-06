@@ -8,7 +8,7 @@ use unisim.vcomponents.all;
 
 entity serializer is
 	generic (
-		GHDL_SIM : boolean := true
+		SERIES6 : boolean := false
 	);
 	port (
 		rst      : in  std_logic;
@@ -33,7 +33,7 @@ begin
 
 -- generate for implementation
 
-forimpl: if GHDL_SIM = false generate
+fors7: if SERIES6 = false generate
 begin
 
 	-- serializer 10:1 (5:1 DDR)
@@ -117,7 +117,7 @@ end generate;
 -- WARNING: this is for GHDL simulator only. Not for implementation!
 --   OSERDESE2 is an encrypted IP, so convert that to
 --   OSERDESE1 (6-series serdes)
-forghdl: if GHDL_SIM = true generate
+fors6: if SERIES6 = true generate
 begin
 
 	-- serializer 10:1 (5:1 DDR)
