@@ -50,33 +50,33 @@ begin
 	timing_hd720p: if RESOLUTION = "HD720P" generate
 	begin
 	clock: entity work.clock_gen(rtl)
-	  generic map (CLKIN_PERIOD=>8.000, CLK_MULTIPLY=>59, CLK_DIVIDE=>5, CLKOUT0_DIV=>4, CLKOUT1_DIV=>20) -- 720p
-	  port map (clk_i=>clk, clk0_o=>serclk, clk1_o=>pixclk);
+		generic map (CLKIN_PERIOD=>8.000, CLK_MULTIPLY=>59, CLK_DIVIDE=>5, CLKOUT0_DIV=>4, CLKOUT1_DIV=>20) -- 720p
+		port map (clk_i=>clk, clk0_o=>serclk, clk1_o=>pixclk);
 	end generate;
 
 	timing_vga: if RESOLUTION = "SVGA" generate
 	begin
 	clock: entity work.clock_gen(rtl)
-	  generic map (CLKIN_PERIOD=>8.000, CLK_MULTIPLY=>8, CLK_DIVIDE=>1, CLKOUT0_DIV=>5, CLKOUT1_DIV=>25) -- 800x600
-	  port map (clk_i=>clk, clk0_o=>serclk, clk1_o=>pixclk);
+		generic map (CLKIN_PERIOD=>8.000, CLK_MULTIPLY=>8, CLK_DIVIDE=>1, CLKOUT0_DIV=>5, CLKOUT1_DIV=>25) -- 800x600
+		port map (clk_i=>clk, clk0_o=>serclk, clk1_o=>pixclk);
 	end generate;
 
 	timing_svga: if RESOLUTION = "VGA" generate
 	begin
 	clock: entity work.clock_gen(rtl)
-	  generic map (CLKIN_PERIOD=>8.000, CLK_MULTIPLY=>8, CLK_DIVIDE=>1, CLKOUT0_DIV=>8, CLKOUT1_DIV=>40) -- 640x480
-	  port map (clk_i=>clk, clk0_o=>serclk, clk1_o=>pixclk );
+		generic map (CLKIN_PERIOD=>8.000, CLK_MULTIPLY=>8, CLK_DIVIDE=>1, CLKOUT0_DIV=>8, CLKOUT1_DIV=>40) -- 640x480
+		port map (clk_i=>clk, clk0_o=>serclk, clk1_o=>pixclk );
 	end generate;
 
 	-- video timing
 	timing: entity work.timing_generator(rtl)
-	  generic map (RESOLUTION => RESOLUTION, GEN_PIX_LOC => GEN_PIX_LOC, OBJECT_SIZE => OBJECT_SIZE)
-	  port map (clk=>pixclk, hsync=>hsync, vsync=>vsync, video_active=>video_active, pixel_x=>pixel_x, pixel_y=>pixel_y);
+		generic map (RESOLUTION => RESOLUTION, GEN_PIX_LOC => GEN_PIX_LOC, OBJECT_SIZE => OBJECT_SIZE)
+		port map (clk=>pixclk, hsync=>hsync, vsync=>vsync, video_active=>video_active, pixel_x=>pixel_x, pixel_y=>pixel_y);
 
 	-- tmds signaling
 	tmds_signaling: entity work.rgb2tmds(rtl)
-	  generic map (SERIES6=>SERIES6)
-	  port map (rst=>rst, pixelclock=>pixclk, serialclock=>serclk,
+		generic map (SERIES6=>SERIES6)
+		port map (rst=>rst, pixelclock=>pixclk, serialclock=>serclk,
 		video_data=>video_data, video_active=>video_active, hsync=>hsync, vsync=>vsync,
 		clk_p=>clk_p, clk_n=>clk_n, data_p=>data_p, data_n=>data_n);
 
@@ -84,18 +84,18 @@ begin
 	gen_patt: if GEN_PATTERN = true generate
 	begin
 	pattern: entity work.pattern_generator(rtl)
-	  port map (clk=>pixclk, video_active=>video_active, rgb=>video_data);
+		port map (clk=>pixclk, video_active=>video_active, rgb=>video_data);
 	end generate;
 
 	-- game object buffer
 	gen_obj: if GEN_PATTERN = false generate
 	begin
 	objbuf: entity work.objectbuffer(rtl)
-	  generic map (OBJECT_SIZE=>OBJECT_SIZE, PIXEL_SIZE =>PIXEL_SIZE)
-	  port map (video_active=>video_active, pixel_x=>pixel_x, pixel_y=>pixel_y,
-	    object1x=>object1x, object1y=>object1y,
-	    object2x=>object2x, object2y=>object2y,
-	    backgrnd_rgb=>backgrnd_rgb, rgb=>video_data);
+		generic map (OBJECT_SIZE=>OBJECT_SIZE, PIXEL_SIZE =>PIXEL_SIZE)
+		port map (video_active=>video_active, pixel_x=>pixel_x, pixel_y=>pixel_y,
+		object1x=>object1x, object1y=>object1y,
+		object2x=>object2x, object2y=>object2y,
+		backgrnd_rgb=>backgrnd_rgb, rgb=>video_data);
 	end generate;
 
 end rtl;
