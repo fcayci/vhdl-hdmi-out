@@ -39,6 +39,30 @@ architecture rtl of timing_generator is
         ACTIVE  : std_logic;
     end record;
 
+-- HD1080p timing
+--      screen area 1920x1080 @60 Hz
+--      horizontal : 1920 visible + 88 front porch (fp) + 44 hsync + 148 back porch = 1648 pixels
+--      vertical   : 1080 visible +  4 front porch (fp) +  5 vsync +  36 back porch = 1125 pixels
+--      Total area 2200x1125
+--      clk input should be 148.5 MHz signal (2200 * 1125 * 60)
+--      hsync and vsync are positive polarity
+
+    constant HD1080P_TIMING : video_timing_type := (
+        H_VIDEO => 1920,
+        H_FP    =>   88,
+        H_SYNC  =>   44,
+        H_BP    =>  148,
+        H_TOTAL => 1648,
+        V_VIDEO => 1080,
+        V_FP    =>    4,
+        V_SYNC  =>    5,
+        V_BP    =>   36,
+        V_TOTAL => 1125,
+        H_POL   =>  '1',
+        V_POL   =>  '1',
+        ACTIVE  =>  '1'
+    );
+
 -- HD720p timing
 --      screen area 1280x720 @60 Hz
 --      horizontal : 1280 visible + 72 front porch (fp) + 80 hsync + 216 back porch = 1648 pixels

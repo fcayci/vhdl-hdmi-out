@@ -30,9 +30,7 @@ begin
     generic map (IOSTANDARD =>"TMDS_33")
     port map (I=>sdata, O=>s_p, OB=>s_n);
 
-
 -- generate for implementation
-
 fors7: if SERIES6 = false generate
 begin
 

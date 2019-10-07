@@ -47,6 +47,13 @@ architecture rtl of hdmi_out is
 begin
 
     -- generate 1x pixel and 5x serial clocks
+    timing_hd1080p: if RESOLUTION = "HD1080P" generate
+    begin
+    clock: entity work.clock_gen(rtl)
+      generic map (CLKIN_PERIOD=>8.000, CLK_MULTIPLY=>59, CLK_DIVIDE=>5, CLKOUT0_DIV=>2, CLKOUT1_DIV=>10) -- 1080p
+      port map (clk_i=>clk, clk0_o=>serclk, clk1_o=>pixclk);
+    end generate;
+
     timing_hd720p: if RESOLUTION = "HD720P" generate
     begin
     clock: entity work.clock_gen(rtl)

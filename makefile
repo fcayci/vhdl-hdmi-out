@@ -9,7 +9,7 @@ ARCHNAME = tb_hdmi_out
 STOPTIME = 4us
 
 # update Xilinx Vivado installation path
-XILINX_VIVADO ?= /opt/Xilinx/Vivado/2018.3
+XILINX_VIVADO ?= /opt/apps/Xilinx/Vivado/2019.1
 UNISIM_PATH = $(XILINX_VIVADO)/data/vhdl/src/unisims
 
 # use VHDL 2002 standard
