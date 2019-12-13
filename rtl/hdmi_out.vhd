@@ -13,7 +13,7 @@ use unisim.vcomponents.all;
 
 entity hdmi_out is
     generic (
-        RESOLUTION   : string  := "HD720P"; -- HD720P, SVGA, VGA
+        RESOLUTION   : string  := "HD1080P"; -- HD1080P, HD720P, SVGA, VGA
         GEN_PATTERN  : boolean := false; -- generate pattern or objects
         GEN_PIX_LOC  : boolean := true; -- generate location counters for x / y coordinates
         OBJECT_SIZE  : natural := 16; -- size of the objects. should be higher than 11
