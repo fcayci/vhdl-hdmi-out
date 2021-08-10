@@ -14,6 +14,7 @@ use unisim.vcomponents.all;
 entity hdmi_out is
     generic (
         RESOLUTION   : string  := "HD1080P"; -- HD1080P, HD720P, SVGA, VGA
+        BOARDNAME : string := "enclustra_artix7"; -- enclustra_artix7, zynq
         GEN_PATTERN  : boolean := false; -- generate pattern or objects
         GEN_PIX_LOC  : boolean := true; -- generate location counters for x / y coordinates
         OBJECT_SIZE  : natural := 16; -- size of the objects. should be higher than 11
@@ -47,33 +48,63 @@ architecture rtl of hdmi_out is
 begin
 
     -- generate 1x pixel and 5x serial clocks
-    timing_hd1080p: if RESOLUTION = "HD1080P" generate
+    timing_hd1080p: if (RESOLUTION = "HD1080P" and  BOARDNAME="zynq") generate
     begin
     clock: entity work.clock_gen(rtl)
       generic map (CLKIN_PERIOD=>8.000, CLK_MULTIPLY=>59, CLK_DIVIDE=>5, CLKOUT0_DIV=>2, CLKOUT1_DIV=>10) -- 1080p
       port map (clk_i=>clk, clk0_o=>serclk, clk1_o=>pixclk);
     end generate;
 
-    timing_hd720p: if RESOLUTION = "HD720P" generate
+    timing_hd720p: if (RESOLUTION = "HD720P"  and  BOARDNAME="zynq") generate
     begin
     clock: entity work.clock_gen(rtl)
         generic map (CLKIN_PERIOD=>8.000, CLK_MULTIPLY=>59, CLK_DIVIDE=>5, CLKOUT0_DIV=>4, CLKOUT1_DIV=>20) -- 720p
         port map (clk_i=>clk, clk0_o=>serclk, clk1_o=>pixclk);
     end generate;
 
-    timing_vga: if RESOLUTION = "SVGA" generate
+    timing_vga: if (RESOLUTION = "SVGA"  and  BOARDNAME="zynq") generate
     begin
     clock: entity work.clock_gen(rtl)
         generic map (CLKIN_PERIOD=>8.000, CLK_MULTIPLY=>8, CLK_DIVIDE=>1, CLKOUT0_DIV=>5, CLKOUT1_DIV=>25) -- 800x600
         port map (clk_i=>clk, clk0_o=>serclk, clk1_o=>pixclk);
     end generate;
 
-    timing_svga: if RESOLUTION = "VGA" generate
+    timing_svga: if (RESOLUTION = "VGA"  and  BOARDNAME="zynq") generate
     begin
     clock: entity work.clock_gen(rtl)
         generic map (CLKIN_PERIOD=>8.000, CLK_MULTIPLY=>8, CLK_DIVIDE=>1, CLKOUT0_DIV=>8, CLKOUT1_DIV=>40) -- 640x480
         port map (clk_i=>clk, clk0_o=>serclk, clk1_o=>pixclk );
     end generate;
+
+    timing_hd1080p_enclustra_artix7: if (RESOLUTION = "HD1080P" and  BOARDNAME="enclustra_artix7") generate
+    begin
+    clock: entity work.clock_gen(rtl)
+        generic map (CLKIN_PERIOD=>20.000, CLK_MULTIPLY=>59, CLK_DIVIDE=>2, CLKOUT0_DIV=>2, CLKOUT1_DIV=>10) -- 1080p 
+        port map (clk_i=>clk, clk0_o=>serclk, clk1_o=>pixclk);
+
+    end generate;
+
+    timing_hd720p_enclustra_artix7: if (RESOLUTION = "HD720P"  and  BOARDNAME="enclustra_artix7") generate
+    begin
+    clock: entity work.clock_gen(rtl)
+        generic map (CLKIN_PERIOD=>20.000, CLK_MULTIPLY=>59, CLK_DIVIDE=>2, CLKOUT0_DIV=>4, CLKOUT1_DIV=>20) -- 720p
+        port map (clk_i=>clk, clk0_o=>serclk, clk1_o=>pixclk);
+    end generate;
+
+    timing_vga_enclustra_artix7: if (RESOLUTION = "SVGA"  and  BOARDNAME="enclustra_artix7") generate
+    begin
+        assert false
+            report "SVGA and enclustra_artix7 configuration not supported yet"
+                severity error;
+    end generate;
+
+    timing_svga_enclustra_artix7: if (RESOLUTION = "VGA"  and  BOARDNAME="enclustra_artix7") generate
+    begin
+        assert false
+            report "VGA and enclustra_artix7 configuration not supported yet"
+                severity error;
+    end generate;
+
 
     -- video timing
     timing: entity work.timing_generator(rtl)
@@ -83,7 +114,7 @@ begin
     -- tmds signaling
     tmds_signaling: entity work.rgb2tmds(rtl)
         generic map (SERIES6=>SERIES6)
-        port map (rst=>rst, pixelclock=>pixclk, serialclock=>serclk,
+        port map (rst=>'0', pixelclock=>pixclk, serialclock=>serclk,
         video_data=>video_data, video_active=>video_active, hsync=>hsync, vsync=>vsync,
         clk_p=>clk_p, clk_n=>clk_n, data_p=>data_p, data_n=>data_n);
 
